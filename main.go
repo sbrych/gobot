@@ -22,12 +22,12 @@ func main() {
 	})
 
 	con.AddCallback("JOIN", func(e *irc.Event) {
-		con.Privmsg(channel, "Siema nygusy!")
+		con.Privmsg(channel, "Sup!")
 	})
 
 	con.AddCallback("PRIVMSG", func(e *irc.Event) {
 		if strings.Contains(e.Message(), "!quit") {
-			con.SendRaw("QUIT :Wypierdalam. Elo!")
+			con.SendRaw("QUIT :I quit")
 			con.Quit()
 		}
 	})

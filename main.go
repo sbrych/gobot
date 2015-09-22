@@ -4,32 +4,31 @@ import (
 	"fmt"
 	"github.com/thoj/go-ircevent"
 	"strings"
-	"io"
 	"io/ioutil"
-	"bufio"
-	"os"
 	"encoding/json"
 )
 
 var channel = "#1125"
 
+type Friendlist struct {
+  Handle  string
+  Host    string
+  Flag    string
+}
+
+type Config struct {
+  Nick    string
+  Host    string
+  Server  string
+  Port    string
+}
+
 func main() {
 
-  type Friendlist struct {
-    Handle  string
-    Host    string
-    Flag    string
-  }
 
-  type Config struct {
-    Nick    string
-    Host    string
-    Server  string
-    Port    string
-  }
-
-	con := irc.IRC("murgrabia", "murgrabia")
-	err := con.Connect("krakow.irc.pl:6667")
+  config  := readConfig()
+	con     := irc.IRC(config.Nick, config.Nick)
+  err     := con.Connect(config.Server + ":" + config.Port)
 
 	if err != nil {
 		fmt.Println("Connection failed")
@@ -54,13 +53,13 @@ func main() {
 	con.Loop()
 }
 
-func readConfig() (config byte[]){
+func readConfig() (Config) {
   var config Config
-  configFile, err := ioutils.ReadFile("config.json")
+  configFile, err := ioutil.ReadFile("config.json")
 
   if err != nil {
-    fmt.Println("Config could not be loaded: " + err)
-    return
+    fmt.Println("Config could not be loaded:")
+    fmt.Println(err)
   }
 
   err = json.Unmarshal(configFile, &config)

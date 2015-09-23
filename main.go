@@ -8,8 +8,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var channel = "#1125"
-
 type Friendlist struct {
   Handle  string
   Host    string
@@ -21,6 +19,7 @@ type Config struct {
   Host    string
   Server  string
   Port    string
+  Channel string
 }
 
 func main() {
@@ -35,11 +34,11 @@ func main() {
 	}
 
 	con.AddCallback("001", func(e *irc.Event) {
-		con.Join(channel)
+		con.Join(config.Channel)
 	})
 
 	con.AddCallback("JOIN", func(e *irc.Event) {
-		con.Privmsg(channel, "Sup!")
+		con.Privmsg(config.Channel, "Sup!")
 	})
 
 	con.AddCallback("PRIVMSG", func(e *irc.Event) {

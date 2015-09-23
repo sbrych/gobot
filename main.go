@@ -24,9 +24,10 @@ type Config struct {
 
 func main() {
 
-  config  := readConfig()
-	con     := irc.IRC(config.Nick, config.Nick)
-  err     := con.Connect(config.Server + ":" + config.Port)
+  config      := readConfig()
+  friendlist  := loadFriendlist()
+	con         := irc.IRC(config.Nick, config.Nick)
+  err         := con.Connect(config.Server + ":" + config.Port)
 
 	if err != nil {
 		fmt.Println("Connection failed")
@@ -38,26 +39,28 @@ func main() {
 	})
 
 	con.AddCallback("JOIN", func(e *irc.Event) {
-		con.Privmsg(config.Channel, "Sup!")
+		con.Privmsg(e.Arguments[0], "Sup!")
 	})
 
 	con.AddCallback("PRIVMSG", func(e *irc.Event) {
     msgParts := strings.Split(e.Arguments[1], " ")
 
-		switch {
-    case msgParts[0] == "!quit":
-      if msgParts[1] == "" {
-        con.SendRaw("QUIT :I quit")
-      } else {
-        con.SendRaw("QUIT :" + msgParts[1])
+    if friendlist.Host == (e.User + "@" + e.Host) {
+      switch {
+      case msgParts[0] == "!quit":
+        if len(msgParts) > 1 {
+          con.SendRaw("QUIT :" + msgParts[1])
+        } else {
+          con.SendRaw("QUIT :I quit")
+        }
+        con.Quit()
+
+      case msgParts[0] == "!join":
+        con.Join(msgParts[1])
+
+      default:
+        fmt.Println(e.Arguments)
       }
-      con.Quit()
-
-    case msgParts[0] == "!join":
-      con.Join(msgParts[1])
-
-    default:
-      fmt.Println(e.Arguments)
     }
 	})
 
@@ -66,7 +69,7 @@ func main() {
 
 func readConfig() (Config) {
   var config Config
-  configFile, err := ioutil.ReadFile("config.yml")
+  configFile, err := ioutil.ReadFile("config")
 
   if err != nil {
     fmt.Println("Config could not be loaded:")
@@ -76,4 +79,18 @@ func readConfig() (Config) {
   err = yaml.Unmarshal(configFile, &config)
 
   return config
+}
+
+func loadFriendlist() (Friendlist) {
+  var friendlist Friendlist
+  friendlistFile, err := ioutil.ReadFile("friendlist")
+
+  if err != nil {
+    fmt.Println("Friendlist could not be loaded")
+    fmt.Println(err)
+  }
+
+  err = yaml.Unmarshal(friendlistFile, &friendlist)
+
+  return friendlist
 }

@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/thoj/go-ircevent"
-	"strings"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"strings"
 )
 
 type Friendlist struct {
@@ -42,10 +42,23 @@ func main() {
 	})
 
 	con.AddCallback("PRIVMSG", func(e *irc.Event) {
-		if strings.Contains(e.Message(), "!quit") {
-			con.SendRaw("QUIT :I quit")
-			con.Quit()
-		}
+    msgParts := strings.Split(e.Arguments[1], " ")
+
+		switch {
+    case msgParts[0] == "!quit":
+      if msgParts[1] == "" {
+        con.SendRaw("QUIT :I quit")
+      } else {
+        con.SendRaw("QUIT :" + msgParts[1])
+      }
+      con.Quit()
+
+    case msgParts[0] == "!join":
+      con.Join(msgParts[1])
+
+    default:
+      fmt.Println(e.Arguments)
+    }
 	})
 
 	con.Loop()

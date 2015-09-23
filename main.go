@@ -5,7 +5,7 @@ import (
 	"github.com/thoj/go-ircevent"
 	"strings"
 	"io/ioutil"
-	"encoding/json"
+	"gopkg.in/yaml.v2"
 )
 
 var channel = "#1125"
@@ -24,7 +24,6 @@ type Config struct {
 }
 
 func main() {
-
 
   config  := readConfig()
 	con     := irc.IRC(config.Nick, config.Nick)
@@ -55,14 +54,14 @@ func main() {
 
 func readConfig() (Config) {
   var config Config
-  configFile, err := ioutil.ReadFile("config.json")
+  configFile, err := ioutil.ReadFile("config.yml")
 
   if err != nil {
     fmt.Println("Config could not be loaded:")
     fmt.Println(err)
   }
 
-  err = json.Unmarshal(configFile, &config)
+  err = yaml.Unmarshal(configFile, &config)
 
   return config
 }

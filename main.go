@@ -47,7 +47,7 @@ func main() {
 
 		if friendlist.Host == (e.User + "@" + e.Host) {
 			switch {
-			case msgParts[0] == "!quit":
+			case msgParts[0] == ".quit":
 				if len(msgParts) > 1 {
 					con.SendRaw("QUIT :" + msgParts[1])
 				} else {
@@ -55,7 +55,7 @@ func main() {
 				}
 				con.Quit()
 
-			case msgParts[0] == "!join":
+			case msgParts[0] == ".join":
 				con.Join(msgParts[1])
 
 			default:

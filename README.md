@@ -3,6 +3,6 @@
 Simple IRC bot written in Go
 
 Todo:
-- Read json (yaml/or both - yet to be decided) config files
-- Implement public commands
-
+- Implement public commands (need to specify which ones)
+- implement authentication
+- implement protection for users from friendlist
